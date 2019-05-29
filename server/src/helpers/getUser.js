@@ -1,5 +1,6 @@
 import fs from 'fs';
 import util from 'util';
+import { baseConverter } from '../Utils/stringUtils';
 const readFile = util.promisify(fs.readFile);
 
 export default async function getUser(id) {

@@ -2,12 +2,13 @@ import fs from 'fs';
 import util from 'util';
 import { handleError } from '../Utils/errorUtils';
 import { errors } from '../Utils/enumUtils';
+import { baseConverter } from '../Utils/stringUtils';
 const writeFile = util.promisify(fs.writeFile);
 const readFile = util.promisify(fs.readFile);
 
 export default async function setUser(user) {
   let data; 
-  
+
   try {
     data = await readFile(`./data/users/${user.id}.json`, 'utf8');
   } catch (e) {

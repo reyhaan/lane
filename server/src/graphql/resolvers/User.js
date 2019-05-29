@@ -1,4 +1,5 @@
 import { getUser, getCompany } from '../../helpers';
+import { baseConverter } from '../../Utils/stringUtils';
 
 // todo: 5. it would be nicer to return a base62 value for the id field instead of a base16 uuid.
 // ideally this would be implemented without changing the underlaying data, in a reusable way.
@@ -6,6 +7,9 @@ import { getUser, getCompany } from '../../helpers';
 // into the graphql api should convert a base62 string back to a base16 uuid
 
 export default {
+  id: (root, args, { ctx }, info) => {
+    var x = baseConverter().base16to10(parseInt(root.id.split("-").join("")))
+  },
   friends: async (root, args, { ctx }, info) => {
     let friends = [];
     // root.friends will be an array of just user ids.
