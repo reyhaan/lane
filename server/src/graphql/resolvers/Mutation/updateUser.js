@@ -1,7 +1,4 @@
 import { setUser } from '../../../helpers';
-import { handleError } from '../../../Utils/errorUtils';
-import { errors } from '../../../Utils/enumUtils';
-import { baseConverter } from '../../../Utils/stringUtils';
 
 export default async function User(root, { user }, { ctx }, info) {
   // #### DONE_todo: 1 this throws a unfriendly (and potentially unsafe) error if a non-existnant user ID is entered.

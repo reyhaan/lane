@@ -2,24 +2,26 @@ import fs from 'fs';
 import util from 'util';
 import { handleError } from '../Utils/errorUtils';
 import { errors } from '../Utils/enumUtils';
-import { baseConverter } from '../Utils/stringUtils';
+import uuidBase62 from 'uuid-base62';
 const writeFile = util.promisify(fs.writeFile);
 const readFile = util.promisify(fs.readFile);
 
 export default async function setUser(user) {
   let data; 
+  const id = uuidBase62.encode(user.id);
 
   try {
-    data = await readFile(`./data/users/${user.id}.json`, 'utf8');
+    data = await readFile(`./data/users/${id}.json`, 'utf8');
   } catch (e) {
-    handleError(e, errors.UserNotFound)
+    handleError(e, errors.UserNotFound);
   }
 
-  data = JSON.parse(data)
-
-  Object.keys(user).map(key => {
-    data[key] = user[key]
-    return true
-  })
-  return writeFile(`./data/users/${user.id}.json`, JSON.stringify(data));
+  data = JSON.parse(data);
+  data =  { ...data, ...user };
+  
+  try {
+    return writeFile(`./data/users/${id}.json`, JSON.stringify(data));
+  } catch (e) {
+    handleError(e, errors.GeneralIOError)
+  }
 }

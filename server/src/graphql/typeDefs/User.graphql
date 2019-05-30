@@ -12,6 +12,6 @@ type User {
   email: String
   color: Color
   friends: [User!]
-  company: Company!
-  address: Address!
+  company: Company
+  address: Address
 }

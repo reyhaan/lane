@@ -1,3 +1,4 @@
 export const errors = {
-    UserNotFound: 'UserNotFound'
+    UserNotFound: 'UserNotFound',
+    GeneralIOError: 'GeneralIOError'
 }
