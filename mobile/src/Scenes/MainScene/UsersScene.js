@@ -48,6 +48,7 @@ export default class UsersScene extends PureComponent {
             return (
               <FlatList
                 data={data.users}
+                keyExtractor={item => item.id}
                 renderItem={({ item }) => (
                   <TouchableOpacity
                     onPress={() =>
