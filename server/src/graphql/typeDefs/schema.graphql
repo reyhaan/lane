@@ -1,6 +1,7 @@
 input FilterOptions {
   name: String
   email: String
+  companyId: String
 }
 
 type Query {
