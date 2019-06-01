@@ -23,23 +23,8 @@ const query = gql`
       id
       color
       name
-      email
       image
-      friends {
-        id
-        name
-        image
-        color
-      }
-      company {
-        name
-        id
-      }
-      address {
-        city
-        country
-        county
-      }
+      email
     }
   }
 `;

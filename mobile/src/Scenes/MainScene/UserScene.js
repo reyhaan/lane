@@ -1,9 +1,9 @@
 import React, { PureComponent } from 'react';
 import { StyleSheet, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
-import { Container, Content, List, ListItem, Text, Thumbnail, Col, Row, Grid, Body, Right, Button } from 'native-base';
+import { Container, Content, List, ListItem, Text, Thumbnail, Col, Row, Grid, Body, Right, Button, Icon, Input, Toast } from 'native-base';
 
 import { gql } from 'apollo-boost';
-import { Query } from 'react-apollo';
+import { Query, Mutation } from 'react-apollo';
 
 import { ErrorScene } from '../../components';
 
@@ -52,15 +52,44 @@ const query = gql`
         id
       }
       address {
+        streetAddress
+        secondaryAddress
+        streetName
+        streetPrefix
+        streetSuffix
         city
-        country
+        cityPrefix
+        citySuffix
+        state
+        zipCode
         county
+        country
+        latitude
+        longitude
       }
     }
   }
 `;
 
+const mutation = gql`
+  mutation UpdateUser($userInput: UserInput!) {
+    updateUser(user: $userInput)
+  }
+`;
+
 export default class UserScene extends PureComponent {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      isEditing: {
+        name: false,
+        email: false,
+      },
+      email: null,
+      name: null
+    }
+  }
 
   renderFriendsList = (friends) => {
     const { navigation } = this.props;
@@ -88,12 +117,26 @@ export default class UserScene extends PureComponent {
     );
   }
 
+  updateUserInfo = () => {
+    console.log(this.state)
+  }
+
+  editItem = (item) => {
+    this.setState({ isEditing: { [item]: true } })
+  }
+
   render() {
     const { navigation } = this.props;
     const user = navigation.getParam('user');
     const id = user.id;
-    console.log(user)
+    const name = this.state.name || user.name
+    const email = this.state.email || user.email
 
+    const userInput = {
+      id: id,
+      name: name,
+      email: email
+    }
 
     // #### DONE_todo: 2. would be cool if we actually displayed full user data that is contained in the user data object.
 
@@ -114,57 +157,98 @@ export default class UserScene extends PureComponent {
               return <ErrorScene message={error.message} />;
             }
 
-            const { user } = data
-
             return (
               <Content style={styles.container}>
                 <Grid>
-                  <Row style={[styles.profilePicContainer, { backgroundColor: user.color }]}>
-                    <Thumbnail style={styles.imageWrapper} large source={{uri: user.image}} />
+                  <Row style={[styles.profilePicContainer, { backgroundColor: data.user.color }]}>
+                    <Thumbnail style={styles.imageWrapper} large source={{uri: data.user.image}} />
                   </Row>
                   <Col>
-                    <List>
-                      <ListItem>
-                        <Body>
-                          <Text note>Name</Text>
-                          <Text>{user.name}</Text>
-                        </Body>
-                        <Right>
-                          <Button transparent>
-                            <Text>View</Text>
-                          </Button>
-                        </Right>
-                      </ListItem>
-                      <ListItem>
-                        <Body>
-                          <Text note>Email</Text>
-                          <Text>{user.email}</Text>
-                        </Body>
-                        <Right>
-                          <Button transparent>
-                            <Text>View</Text>
-                          </Button>
-                        </Right>
-                      </ListItem>
-                      <ListItem>
-                        <TouchableOpacity
-                          onPress={() =>
-                            navigation.navigate('CompanyScene', { company: user.company })
-                          }
-                        >
+                  <Mutation mutation={mutation} variables={{ userInput }}>
+                    {mutation => (
+                      <List>
+                        <ListItem>
                           <Body>
-                            <Text note>Company</Text>
-                            <Text>{user.company.name}</Text>
+                            <Text note>Name</Text>
+                            { this.state.isEditing.name && 
+                              <Input
+                                autoFocus={true}
+                                onChangeText={(value) => {this.setState({ name: value })}}
+                                onSubmitEditing={() => {
+                                  console.log(this.state, id, name, email)
+                                  this.setState({ isEditing: { name: false } }, () => {
+                                    mutation();
+                                    Toast.show({
+                                      text: 'Username updated!',
+                                      buttonText: 'Okay'
+                                    })
+                                  })
+                                }}
+                                defaultValue={this.state.name || data.user.name} 
+                              />
+                            }
+                            { !this.state.isEditing.name && <Text>{this.state.name || data.user.name}</Text> }
                           </Body>
-                        </TouchableOpacity>
-                      </ListItem>
-                    </List>
-                    <Row style={{ padding: 10, paddingLeft: 30 }}>
-                      <Text note>Friends</Text>
-                    </Row>
-                    <Row style={styles.friendsContainer}>
-                      {this.renderFriendsList(user.friends)}
-                    </Row>
+                          <Right>
+                            <Button transparent onPress={() => this.editItem('name')}>
+                              <Icon style={{ color: '#ccc' }} type="FontAwesome" name="pencil" />
+                            </Button>
+                          </Right>
+                        </ListItem>
+                        <ListItem>
+                          <Body>
+                            <Text note>Email</Text>
+                            { this.state.isEditing.email && 
+                              <Input
+                                autoFocus={true}
+                                onChangeText={(value) => {this.setState({ email: value })}}
+                                onSubmitEditing={() => {
+                                  this.setState({ isEditing: { email: false } }, () => {
+                                    mutation();
+                                    Toast.show({
+                                      text: 'User email updated!',
+                                      buttonText: 'Okay'
+                                    })
+                                  })
+                                }}
+                                defaultValue={this.state.email || data.user.email}
+                              /> 
+                            }
+                            { !this.state.isEditing.email && <Text>{this.state.email || data.user.email}</Text> }
+                          </Body>
+                          <Right>
+                            <Button transparent onPress={() => this.editItem('email')}>
+                              <Icon style={{ color: '#ccc' }} type="FontAwesome" name="pencil" />
+                            </Button>
+                          </Right>
+                        </ListItem>
+                        { data.user.company &&
+                          <ListItem>
+                            <TouchableOpacity
+                              onPress={() =>
+                                navigation.navigate('CompanyScene', { company: data.user.company })
+                              }
+                            >
+                              <Body>
+                                <Text note>Company</Text>
+                                <Text>{data.user.company.name}</Text>
+                              </Body>
+                            </TouchableOpacity>
+                          </ListItem>
+                        }
+                      </List>
+                    )}
+                  </Mutation>
+                    { data.user.friends && data.user.friends.length !== 0 &&
+                      <>
+                        <Row style={{ padding: 10, paddingLeft: 30 }}>
+                          <Text note>Friends</Text>
+                        </Row>
+                        <Row style={styles.friendsContainer}>
+                          {this.renderFriendsList(data.user.friends)}
+                        </Row>
+                      </>
+                    }
                   </Col>
                 </Grid>
               </Content>
