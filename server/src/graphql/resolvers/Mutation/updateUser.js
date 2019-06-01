@@ -9,6 +9,8 @@ export default async function User(root, { user }, { ctx }, info) {
 
   // user.id = baseConverter.decode(user.id)
 
+  console.log(ctx)
+
   await setUser(user);
 
   return true;

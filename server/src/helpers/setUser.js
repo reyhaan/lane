@@ -20,11 +20,16 @@ export default async function setUser(user) {
     handleError(e, errors.UserNotFound);
   }
 
+  
   data = JSON.parse(data);
+
+  user.id = id
+
   data =  { ...data, ...user };
   
+  console.log(data.id, data.name, id)
   try {
-    return writeFile(`./data/users/${id}.json`, JSON.stringify(data));
+    return await writeFile(`./data/users/${id}.json`, JSON.stringify(data));
   } catch (e) {
     handleError(e, errors.GeneralIOError)
   }

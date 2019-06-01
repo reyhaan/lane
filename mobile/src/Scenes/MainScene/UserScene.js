@@ -3,7 +3,7 @@ import { StyleSheet, TouchableOpacity, FlatList, ActivityIndicator } from 'react
 import { Container, Content, List, ListItem, Text, Thumbnail, Col, Row, Grid, Body, Right, Button, Icon, Input, Toast } from 'native-base';
 
 import { gql } from 'apollo-boost';
-import { Query, Mutation } from 'react-apollo';
+import { Query, Mutation, withApollo } from 'react-apollo';
 
 import { ErrorScene } from '../../components';
 
@@ -77,7 +77,7 @@ const mutation = gql`
   }
 `;
 
-export default class UserScene extends PureComponent {
+class UserScene extends PureComponent {
 
   constructor(props) {
     super(props);
@@ -117,10 +117,6 @@ export default class UserScene extends PureComponent {
     );
   }
 
-  updateUserInfo = () => {
-    console.log(this.state)
-  }
-
   editItem = (item) => {
     this.setState({ isEditing: { [item]: true } })
   }
@@ -144,7 +140,7 @@ export default class UserScene extends PureComponent {
     // if this is done correctly, we should be re-using components from the CompaniesScene.
 
     // #### DONE_todo: 4. would be even cooler to see a list of their friends, so I can tap on them an get more info about that user.
-    // todo: 5 would be cool to make the user name and email updateable and saved ot the database, so we can let our users change their info.
+    // #### DONE_todo: 5 would be cool to make the user name and email updateable and saved ot the database, so we can let our users change their info.
     return (
       <Container>
         <Query query={query} variables={{ id }}>
@@ -156,6 +152,8 @@ export default class UserScene extends PureComponent {
             if (error) {
               return <ErrorScene message={error.message} />;
             }
+
+            console.log(data)
 
             return (
               <Content style={styles.container}>
@@ -175,7 +173,6 @@ export default class UserScene extends PureComponent {
                                 autoFocus={true}
                                 onChangeText={(value) => {this.setState({ name: value })}}
                                 onSubmitEditing={() => {
-                                  console.log(this.state, id, name, email)
                                   this.setState({ isEditing: { name: false } }, () => {
                                     mutation();
                                     Toast.show({
@@ -260,3 +257,5 @@ export default class UserScene extends PureComponent {
     );
   }
 }
+
+export default withApollo(UserScene)
