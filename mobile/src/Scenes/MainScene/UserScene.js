@@ -110,8 +110,9 @@ class UserScene extends PureComponent {
         renderItem={({ item }) => (
           <TouchableOpacity
             onPress={() => {
-              this.resetState()
-              navigation.navigate('UserScene', { ...item })
+              this.resetState(() => {
+                navigation.navigate('UserScene', { ...item })
+              })
             }}
           >
             <Thumbnail style={styles.imageWrapper} large source={{uri: item.image}} />
@@ -126,15 +127,15 @@ class UserScene extends PureComponent {
     this.setState({ isEditing: { [item]: true } })
   }
 
-  resetState = () => {
+  resetState = (cb) => {
     this.setState({
       isEditing: {
         name: false,
         email: false
       },
+      email: null,
       name: null,
-      email: null
-    })
+    }, () => {cb()})
   }
 
   render() {
@@ -209,10 +210,10 @@ class UserScene extends PureComponent {
                                     })
                                   })
                                 }}
-                                defaultValue={user.name} 
+                                defaultValue={data.user.name} 
                               />
                             }
-                            { !this.state.isEditing.name && <Text>{user.name}</Text> }
+                            { !this.state.isEditing.name && <Text>{data.user.name}</Text> }
                           </Body>
                           <Right>
                             <Button transparent onPress={() => this.editItem('name')}>
@@ -236,10 +237,10 @@ class UserScene extends PureComponent {
                                     })
                                   })
                                 }}
-                                defaultValue={user.email}
+                                defaultValue={data.user.email}
                               /> 
                             }
-                            { !this.state.isEditing.email && <Text>{user.email}</Text> }
+                            { !this.state.isEditing.email && <Text>{data.user.email}</Text> }
                           </Body>
                           <Right>
                             <Button transparent onPress={() => this.editItem('email')}>
