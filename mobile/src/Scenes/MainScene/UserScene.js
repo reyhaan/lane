@@ -72,8 +72,12 @@ const query = gql`
 `;
 
 const mutation = gql`
-  mutation UpdateUser($userInput: UserInput!) {
-    updateUser(user: $userInput)
+  mutation UpdateUser($user: UserInput!) {
+    updateUser(user: $user) {
+      id
+      name
+      email
+    }
   }
 `;
 
@@ -105,9 +109,10 @@ class UserScene extends PureComponent {
         horizontal
         renderItem={({ item }) => (
           <TouchableOpacity
-            onPress={() =>
-              navigation.navigate('UserScene', { user: item })
-            }
+            onPress={() => {
+              this.resetState()
+              navigation.navigate('UserScene', { ...item })
+            }}
           >
             <Thumbnail style={styles.imageWrapper} large source={{uri: item.image}} />
             <Text ellipsizeMode='tail' numberOfLines={1} style={{ width: 70, textAlign: "center" }}>{item.name.split(" ")[0]}</Text>
@@ -121,18 +126,25 @@ class UserScene extends PureComponent {
     this.setState({ isEditing: { [item]: true } })
   }
 
-  render() {
-    const { navigation } = this.props;
-    const user = navigation.getParam('user');
-    const id = user.id;
-    const name = this.state.name || user.name
-    const email = this.state.email || user.email
+  resetState = () => {
+    this.setState({
+      isEditing: {
+        name: false,
+        email: false
+      },
+      name: null,
+      email: null
+    })
+  }
 
-    const userInput = {
-      id: id,
-      name: name,
-      email: email
-    }
+  render() {
+    let { name, email } = this.state;
+    const { navigation } = this.props;
+    const id = navigation.getParam('id');
+    name = name || navigation.getParam('name')
+    email = email || navigation.getParam('email')
+
+    const user = { id, name, email }
 
     // #### DONE_todo: 2. would be cool if we actually displayed full user data that is contained in the user data object.
 
@@ -153,8 +165,6 @@ class UserScene extends PureComponent {
               return <ErrorScene message={error.message} />;
             }
 
-            console.log(data)
-
             return (
               <Content style={styles.container}>
                 <Grid>
@@ -162,7 +172,25 @@ class UserScene extends PureComponent {
                     <Thumbnail style={styles.imageWrapper} large source={{uri: data.user.image}} />
                   </Row>
                   <Col>
-                  <Mutation mutation={mutation} variables={{ userInput }}>
+                  <Mutation 
+                    mutation={mutation} 
+                    variables={{ user }} 
+                    update={(store, { data }) => {
+                      try {
+                        const userData = store.readQuery({ query: query, variables: { id: id } })
+                        
+                        userData.user.name = data.updateUser.name
+                        userData.user.email = data.updateUser.email
+
+                        store.writeQuery({
+                          query: mutation,
+                          data: { updateUser: userData.user } 
+                        })
+                      } catch(e) {
+                        
+                      }
+                    }}
+                  >
                     {mutation => (
                       <List>
                         <ListItem>
@@ -176,15 +204,15 @@ class UserScene extends PureComponent {
                                   this.setState({ isEditing: { name: false } }, () => {
                                     mutation();
                                     Toast.show({
-                                      text: 'Username updated!',
+                                      text: 'updated!',
                                       buttonText: 'Okay'
                                     })
                                   })
                                 }}
-                                defaultValue={this.state.name || data.user.name} 
+                                defaultValue={user.name} 
                               />
                             }
-                            { !this.state.isEditing.name && <Text>{this.state.name || data.user.name}</Text> }
+                            { !this.state.isEditing.name && <Text>{user.name}</Text> }
                           </Body>
                           <Right>
                             <Button transparent onPress={() => this.editItem('name')}>
@@ -203,15 +231,15 @@ class UserScene extends PureComponent {
                                   this.setState({ isEditing: { email: false } }, () => {
                                     mutation();
                                     Toast.show({
-                                      text: 'User email updated!',
+                                      text: 'Updated!',
                                       buttonText: 'Okay'
                                     })
                                   })
                                 }}
-                                defaultValue={this.state.email || data.user.email}
+                                defaultValue={user.email}
                               /> 
                             }
-                            { !this.state.isEditing.email && <Text>{this.state.email || data.user.email}</Text> }
+                            { !this.state.isEditing.email && <Text>{user.email}</Text> }
                           </Body>
                           <Right>
                             <Button transparent onPress={() => this.editItem('email')}>

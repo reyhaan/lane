@@ -11,8 +11,14 @@ type Query {
   companies: [Company!]
 }
 
+type UserOutput {
+  id: ID!
+  name: String!
+  email: String!
+}
+
 type Mutation {
-  updateUser(user: UserInput!): Boolean
+  updateUser(user: UserInput!): UserOutput!
 }
 
 schema {
