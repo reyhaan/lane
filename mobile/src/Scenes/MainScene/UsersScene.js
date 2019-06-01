@@ -17,14 +17,14 @@ const styles = StyleSheet.create({
   }
 });
 
-const query = gql`
+export const UsersQuery = gql`
   query Users {
     users {
       id
       color
       name
-      email
       image
+      email
     }
   }
 `;
@@ -35,7 +35,7 @@ export default class UsersScene extends PureComponent {
 
     return (
       <View style={styles.container}>
-        <Query query={query}>
+        <Query query={UsersQuery}>
           {({ loading, error, data }) => {
             if (loading) {
               return <ActivityIndicator />;
@@ -48,10 +48,11 @@ export default class UsersScene extends PureComponent {
             return (
               <FlatList
                 data={data.users}
+                keyExtractor={item => item.id}
                 renderItem={({ item }) => (
                   <TouchableOpacity
                     onPress={() =>
-                      navigation.navigate('UserScene', { id: item.id })
+                      navigation.navigate('UserScene', { ...item })
                     }
                   >
                     <UserList user={item} />

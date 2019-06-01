@@ -1,12 +1,24 @@
+input FilterOptions {
+  name: String
+  email: String
+  companyId: String
+}
+
 type Query {
   user(id: ID!): User!
-  users: [User!]
+  users(filter: FilterOptions): [User!]
   company(id: ID!): Company!
   companies: [Company!]
 }
 
+type UserOutput {
+  id: ID!
+  name: String!
+  email: String!
+}
+
 type Mutation {
-  updateUser(user: UserInput!): Boolean
+  updateUser(user: UserInput!): UserOutput!
 }
 
 schema {
