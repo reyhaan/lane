@@ -25,6 +25,11 @@ const query = gql`
       name
       email
       image
+      friends {
+        id
+        name
+        image
+      }
       company {
         name
         id

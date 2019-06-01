@@ -1,14 +1,10 @@
 import React, { PureComponent } from 'react';
-import { View, StyleSheet, TouchableOpacity, } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import { Container, Content, List, ListItem, Text, Thumbnail, Col, Row, Grid, Body, Right, Button } from 'native-base';
 
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'column',
-  },
-  userList: {
-    flexDirection: 'row',
-    padding: 20
   },
   imageWrapper: {
     marginRight: 20,
@@ -25,18 +21,35 @@ const styles = StyleSheet.create({
     alignItems: "center", 
     padding: 40 
   },
-  text: {
-    flexDirection: 'column'
-  },
-  textName: {
-    fontSize: 24
-  },
-  textEmail: {
-    fontSize: 18
+  friendsContainer: {
+    overflow: 'scroll'
   }
 });
 
 export default class UserScene extends PureComponent {
+
+  renderFriendsList = (friends) => {
+    if (!friends) {
+      return (<Text>No friends bruh!?</Text>)
+    }
+    return (
+      <FlatList
+        data={friends}
+        keyExtractor={item => item.id}
+        horizontal
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('UserScene', { user: item })
+            }
+          >
+            <Thumbnail style={styles.imageWrapper} large source={{uri: item.image}} />
+          </TouchableOpacity>
+        )}
+      />
+    );
+  }
+
   render() {
     const { navigation } = this.props;
     const user = navigation.getParam('user');
@@ -44,9 +57,9 @@ export default class UserScene extends PureComponent {
     console.log(user)
 
 
-    // todo: 2. would be cool if we actually displayed full user data that is contained in the user data object.
+    // #### DONE_todo: 2. would be cool if we actually displayed full user data that is contained in the user data object.
 
-    // todo: 3. would be extra cool to include their company info, and if you tap on it you can go that CompanyScene.
+    // #### DONE_todo: 3. would be extra cool to include their company info, and if you tap on it you can go that CompanyScene.
     // if this is done correctly, we should be re-using components from the CompaniesScene.
 
     // todo: 4. would be even cooler to see a list of their friends, so I can tap on them an get more info about that user.
@@ -95,6 +108,9 @@ export default class UserScene extends PureComponent {
                   </TouchableOpacity>
                 </ListItem>
               </List>
+              <Row style={styles.friendsContainer}>
+                {this.renderFriendsList(user.friends)}
+              </Row>
             </Col>
           </Grid>
         </Content>
