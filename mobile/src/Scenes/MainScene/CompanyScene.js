@@ -101,6 +101,9 @@ class CompanyScene extends PureComponent {
   }
 
   render() {
+    // #### DONE_todo: 2. would be really cool to show the company info here.
+    // #### DONE_todo: 3. would be extra cool to show the employee list and make it navigate to that user on tap.
+
     const { navigation } = this.props;
     const id = navigation.getParam('id');
 

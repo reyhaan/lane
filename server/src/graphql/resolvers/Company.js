@@ -20,7 +20,6 @@ export default {
       return filteredUsers;
     } else {
       let users = await getUsers({ companyId: root.id });
-      console.log("NOT FILTERESD", root.id,  users)
       return users;
     }
   },
