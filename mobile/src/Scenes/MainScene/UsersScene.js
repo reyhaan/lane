@@ -25,6 +25,15 @@ const query = gql`
       name
       email
       image
+      company {
+        name
+        id
+      }
+      address {
+        city
+        country
+        county
+      }
     }
   }
 `;
@@ -52,7 +61,7 @@ export default class UsersScene extends PureComponent {
                 renderItem={({ item }) => (
                   <TouchableOpacity
                     onPress={() =>
-                      navigation.navigate('UserScene', { id: item.id })
+                      navigation.navigate('UserScene', { user: item })
                     }
                   >
                     <UserList user={item} />
