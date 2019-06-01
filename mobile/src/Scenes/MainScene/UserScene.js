@@ -262,6 +262,14 @@ class UserScene extends PureComponent {
                             </TouchableOpacity>
                           </ListItem>
                         }
+                        <ListItem>
+                          <Body>
+                            <Text note>Address</Text>
+                            <Text>{`${data.user.address.streetAddress}, \n${data.user.address.city}, \n${data.user.address.country}, \n ${data.user.address.zipCode}`}</Text>
+                          </Body>
+                          <Right>
+                          </Right>
+                        </ListItem>
                       </List>
                     )}
                   </Mutation>

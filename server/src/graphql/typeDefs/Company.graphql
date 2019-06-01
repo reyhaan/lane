@@ -28,6 +28,7 @@ type Company {
   name: String!
   catchPhrase: String!
   bs: String!
+  count: Int!
   suffice: String!
   employees: [User!]
   address: Address

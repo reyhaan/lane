@@ -33,13 +33,14 @@ const styles = StyleSheet.create({
 });
 
 export default memo(({ company }) => (
-  <View style={styles.companyList}>
+  <View style={styles.userList}>
     <View style={[styles.imageWrapper, { borderColor: company.color }]}>
       <Image style={styles.image} source={{ uri: company.image }} />
     </View>
     <View style={styles.text}>
       <Text style={styles.textName}>{company.name}</Text>
       <Text style={styles.textEmail}>{company.catchPhrase}</Text>
+      <Text style={styles.textEmail}># of employees: {company.count}</Text>
     </View>
   </View>
 ));

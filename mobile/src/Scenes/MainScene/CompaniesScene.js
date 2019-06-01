@@ -25,6 +25,7 @@ const query = gql`
       name
       image
       catchPhrase
+      count
     }
   }
 `;
@@ -53,7 +54,7 @@ export default class CompaniesScene extends PureComponent {
                 renderItem={({ item }) => (
                   <TouchableOpacity
                     onPress={() =>
-                      navigation.navigate('CompanyScene', { id: item.id })
+                      navigation.navigate('CompanyScene', { ...item })
                     }
                   >
                     <CompanyList company={item} />
