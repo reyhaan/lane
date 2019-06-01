@@ -3,11 +3,11 @@ import util from 'util';
 import path from 'path';
 import { getUser } from '../helpers';
 
-const readDir = util.promisify(fs.readdir);
+const readDir = util.promisify(fs.readdirSync);
 
 export default async function getUsers(filter) {
   try {
-    const files = await readDir(path.join(__dirname, '../../data/users'));
+    const files = fs.readdirSync(path.join(__dirname, '../../data/users'));
     const users = files.map(filename => getUser(filename.replace('.json', '')));
     const data = await Promise.all(users)
     

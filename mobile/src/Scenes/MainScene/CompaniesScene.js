@@ -46,8 +46,6 @@ export default class CompaniesScene extends PureComponent {
               return <ErrorScene message={error.message} />;
             }
 
-            console.log(data)
-
             return (
               <FlatList
                 data={data.companies}

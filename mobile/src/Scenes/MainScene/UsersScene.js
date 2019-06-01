@@ -29,6 +29,7 @@ const query = gql`
         id
         name
         image
+        color
       }
       company {
         name
