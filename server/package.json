@@ -22,7 +22,7 @@
     "prettier": "1.15.3"
   },
   "dependencies": {
-    "apollo-server-koa": "^2.4.8",
+    "apollo-server-koa": "^2.14.2",
     "color": "^3.1.0",
     "faker": "^4.1.0",
     "glob": "^7.1.3",
